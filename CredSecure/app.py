@@ -2,10 +2,12 @@
 from flask import Flask, render_template, request,url_for,session,redirect
 import pickle
 import numpy as np
+from flask_socketio import SocketIO
 # Load the Random Forest CLassifier model
 filename = 'credit-card-model.pkl'
 model = pickle.load(open('credit-card-model.pkl', 'rb'))
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.secret_key = 'C16'
 # Home page route
 @app.route('/')
@@ -74,12 +76,10 @@ def result(prediction):
 # Contact page route
 @app.route('/contact')
 def contact():
-    if 'loggedin' in session:
         return render_template('contact.html')
-    return redirect(url_for('home')) 
 
 # Signup page route
-@app.route('/signup', methods=['POST','GET'])
+@app.route('/signup')
 def signup():
     return render_template('signup.html')
 
@@ -99,4 +99,4 @@ def logout():
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app, debug=True)
